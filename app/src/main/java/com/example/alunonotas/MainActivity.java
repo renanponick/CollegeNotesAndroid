@@ -12,11 +12,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    ArrayList<String[]> alunosNotas = new ArrayList<>();
+    String[] aluno;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // teria que pegar a lista de arrei enviada por parametro
+        Bundle args = getIntent().getExtras();
+        aluno = args.getStringArray("aluno");
+
         Button btLogin = (Button) findViewById(R.id.calcular);
         btLogin.setOnClickListener(onClickLogin());
     }
@@ -41,7 +48,8 @@ public class MainActivity extends AppCompatActivity {
                 float n4 = Float.parseFloat(tN4.getText().toString());
                 float med = ((n1+n2+n3+n4)/4);
 
-                String[] aluno = {
+                // array que armazena as informações que serão adicionadas novas
+                String[] newAluno = {
                         nome,
                         endereco,
                         data,
@@ -52,12 +60,21 @@ public class MainActivity extends AppCompatActivity {
                         String.valueOf(med)
                 };
 
-                Intent intent = new Intent(MainActivity.this, exibir.class);
-                startActivityForResult(intent, 2);
-                Bundle params = new Bundle();
-                params.putStringArray("aluno", aluno);
-                intent.putExtras(params);
-                startActivity(intent);
+                int length = alunosNotas.size()+1;
+                // arrayList que armazena todos os alunos com suas respectivas informações
+                if(length>30){
+                    alunosNotas.add(length, newAluno);
+                    Intent intent = new Intent(MainActivity.this, exibir.class);
+                    startActivityForResult(intent, 2);
+
+                    // teria que passar a lista de array e nao so o aluno
+                    Bundle params = new Bundle();
+                    params.putStringArray("aluno", newAluno);
+                    intent.putExtras(params);
+                    startActivity(intent);
+                } else {
+                    throw new Error("Limite 30 alunos");
+                }
             }
         };
     }
