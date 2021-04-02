@@ -2,11 +2,16 @@ package com.example.alunonotas;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class exibir extends AppCompatActivity {
-    String[] aluno;
+    ArrayList<Aluno> alunosNotas = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -14,7 +19,7 @@ public class exibir extends AppCompatActivity {
         setContentView(R.layout.activity_exibir);
 
         Bundle args = getIntent().getExtras();
-        aluno = args.getStringArray("aluno");
+        alunosNotas = args.getParcelableArrayList("aluno");
 
         TextView tNome = (TextView) findViewById(R.id.textName);
         TextView tEnd = (TextView) findViewById(R.id.textEnd);
@@ -25,13 +30,36 @@ public class exibir extends AppCompatActivity {
         TextView tN4 = (TextView) findViewById(R.id.textN4);
         TextView tMed = (TextView) findViewById(R.id.textMed);
 
-        tNome.setText(aluno[0]);
-        tEnd.setText(aluno[1]);
-        tData.setText(aluno[2]);
-        tN1.setText(aluno[3]);
-        tN2.setText(aluno[4]);
-        tN3.setText(aluno[5]);
-        tN4.setText(aluno[6]);
-        tMed.setText(aluno[7]);
+        alunosNotas.forEach(aluno -> {
+            tNome.setText(aluno.nome);
+            tEnd.setText(aluno.end);
+            tData.setText(aluno.nasc);
+            tN1.setText(aluno.notas[0]);
+            tN2.setText(aluno.notas[1]);
+            tN3.setText(aluno.notas[2]);
+            tN4.setText(aluno.notas[3]);
+            tMed.setText(aluno.med);
+        });
+
+        Button btAdd = (Button) findViewById(R.id.btnAdd);
+        btAdd.setOnClickListener(onClickAdicionar());
+    }
+    private View.OnClickListener onClickAdicionar() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int length = alunosNotas.size();
+                if(length<=30){
+                    Intent intent = new Intent();
+                    Bundle params = new Bundle();
+                    params.putParcelableArrayList("aluno", alunosNotas);
+                    intent.putExtras(params);
+                    setResult(2,intent);
+                    finish();
+                } else {
+                    throw new Error("Limite 30 alunos");
+                }
+            }
+        };
     }
 }
